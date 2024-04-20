@@ -44,7 +44,7 @@ const int brickWidth = 20;       // Tuğla genişliği
 const int brickHeight = 8;       // Tuğla yüksekliği
 const int brickPadding = 2;      // Tuğla arası boşluk
 const int brickOffsetX = 18;     // Tuğla başlangıç x konumu
-const int brickOffsetY = 10;     // Tuğla başlangıç y konumu
+const int brickOffsetY = 2;      // Tuğla başlangıç y konumu
 
 void basla() {
   // Topun ve paletin konumunu ve hızını sıfırla
@@ -90,12 +90,16 @@ void basla() {
     ballX += ballDX;
     ballY += ballDY;
     
-    // Topun ekran kenarlarına çarpmasını kontrol et
+    // Topun sınırları kontrol et
     if (ballX <= 0 || ballX >= SCREEN_WIDTH) {
       ballDX *= -1;
     }
-    if (ballY <= 0 || ballY >= SCREEN_HEIGHT) {
+    if (ballY <= 0) {
       ballDY *= -1;
+    }
+    if (ballY >= SCREEN_HEIGHT) {
+      // Top ekranın altına ulaştı, oyunu bitir
+      return;
     }
     
     // Topun paletle çarpışmasını kontrol et
@@ -125,6 +129,7 @@ void basla() {
     delay(10);
   }
 }
+
 void loop() {
   // Menüyü göster
   display.clearDisplay();
