@@ -8,8 +8,16 @@
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+#define A 10
+#define B 9
+#define C 8
+#define D 7
+#define E 6
+#define F 5
+#define G 4
+
 const int buttonPin1 = 2; // Mavi buton
-const int buttonPin2 = 8; // Kırmızı buton
+const int buttonPin2 = 11; // Kırmızı buton
 
 int selectedOption = 0;
 const int numOptions = 2; // Başla ve Çıkış
@@ -23,7 +31,7 @@ void setup() {
   pinMode(buttonPin2, INPUT_PULLUP); // Dahili direnç ile kırmızı butonun pull-up
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 allocation failed"));
+    Serial.println("SSD1306 allocation failed");
     for(;;);
   }
 
@@ -45,8 +53,30 @@ const int brickHeight = 8;       // Tuğla yüksekliği
 const int brickPadding = 2;      // Tuğla arası boşluk
 const int brickOffsetX = 18;     // Tuğla başlangıç x konumu
 const int brickOffsetY = 2;      // Tuğla başlangıç y konumu
+int score = 0; // Skor değişkeni
+
+const byte digits[][7] = {
+  {1, 1, 1, 1, 1, 1, 0}, // 0
+  {0, 1, 1, 0, 0, 0, 0}, // 1
+  {1, 1, 0, 1, 1, 0, 1}, // 2
+  {1, 1, 1, 1, 0, 0, 1}, // 3
+  {0, 1, 1, 0, 0, 1, 1}, // 4
+  {1, 0, 1, 1, 0, 1, 1}, // 5
+  {1, 0, 1, 1, 1, 1, 1}, // 6
+  {1, 1, 1, 0, 0, 0, 0}, // 7
+  {1, 1, 1, 1, 1, 1, 1}, // 8
+  {1, 1, 1, 1, 0, 1, 1}  // 9
+};
 
 void basla() {
+
+  pinMode(A, OUTPUT);
+  pinMode(B, OUTPUT);
+  pinMode(C, OUTPUT);
+  pinMode(D, OUTPUT);
+  pinMode(E, OUTPUT);
+  pinMode(F, OUTPUT);
+  pinMode(G, OUTPUT);
   // Topun ve paletin konumunu ve hızını sıfırla
   int ballX = SCREEN_WIDTH / 2;
   int ballY = SCREEN_HEIGHT / 2;
@@ -61,6 +91,8 @@ void basla() {
       bricks[row][col] = 1;
     }
   }
+
+  int tempScore;
   
   // Ana oyun döngüsü
   while (true) {
@@ -106,7 +138,7 @@ void basla() {
     if (ballY >= SCREEN_HEIGHT - 8 - ballSize && ballX >= paddleX && ballX <= paddleX + paddleWidth) {
       ballDY *= -1;
     }
-    
+    displayDigit(score);
     // Topun tuğlalarla çarpışmasını kontrol et
     for (int row = 0; row < brickRows; row++) {
       for (int col = 0; col < brickColumns; col++) {
@@ -117,16 +149,30 @@ void basla() {
               ballX + ballSize >= brickX && ballX - ballSize <= brickX + brickWidth) {
             ballDY *= -1;
             bricks[row][col] = 0; // Tuğlayı kır
+            score++; // Skoru artır
+            tempScore = score;
+            score = score % 10;
+            displayDigit(score);
+            Serial.println(tempScore);
           }
         }
       }
     }
-    
+        
     // Oyunu yeniden çiz
     display.display();
     
     // Biraz gecikme ekle
     delay(10);
+  }
+}
+
+// 7 segment display'i güncellemek için fonksiyon
+void displayDigit(int digit) {
+  int a=0;
+  for (int i = 10; i > 3; i--) {
+    digitalWrite(i, !digits[digit][a]); // Değeri tersine çevir
+    a++;
   }
 }
 
@@ -167,16 +213,16 @@ void loop() {
     if (selectedOption == 1) {
       // Ekranı temizle
       display.clearDisplay();
+      display.print("tesekkürler");
       display.display();
       // Sonsuz döngüde kalır ve işlemi durdurur
-  while(true) {
-    // Sonsuz döngü
-  }
-  }
-  if(selectedOption == 0){
-    
-    basla();
-  }
-
+      while(true) {
+        // Sonsuz döngü
+      }
+    }
+    if(selectedOption == 0){
+      score = 0; // Oyun başladığında skoru sıfırla
+      basla();
+    }
   }
 }
