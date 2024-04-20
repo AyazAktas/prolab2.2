@@ -31,7 +31,7 @@ const int brickOffsetY = 2;      // Tuğla başlangıç y konumu
 const int buttonPin1 = 2; // Mavi buton
 const int buttonPin2 = 11; // Kırmızı buton
 
-const int redLedPin = 2; // Kırmızı led
+const int redLedPin = 8; // Kırmızı led
 const int yellowLedPin = 13; // Sarı led
 const int greenLedPin = 12; // Yeşil led
 
@@ -276,7 +276,7 @@ void loop() {
     if (selectedOption == 1) {
       // Ekranı temizle
       display.clearDisplay();
-      display.print("tesekkürler");
+      display.print("tesekkurler");
       display.display();
       // Sonsuz döngüde kalır ve işlemi durdurur
       while (true) {
