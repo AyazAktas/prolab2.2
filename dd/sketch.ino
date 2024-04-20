@@ -33,6 +33,17 @@ void setup() {
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 }
+void basla() {
+  // Ekranı temizle
+  display.clearDisplay();
+  display.display();
+  // Yeni ekrana geçiş mesajını yaz
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(10, 20);
+  display.println("Selam!");
+  display.display();
+}
 
 void loop() {
   // Menüyü göster
@@ -58,15 +69,20 @@ void loop() {
   if(buttonState1 == LOW) {
     selectedOption = 1 - selectedOption; // Toggle işlemi (0 ise 1, 1 ise 0 yapar)
     delay(200); // debounce
+    // Seçilen seçenekle ilgili işlevi çağır
   }
 
   // Kırmızı butonun durumunu oku
   int buttonState2 = digitalRead(buttonPin2);
   // Kırmızı butona basıldığında seçilen seçeneği seç
-  if(buttonState2 == LOW) {
-    // Seçilen seçeneği seri monitöre yaz
-    Serial.println("Seçilen seçenek: " + options[selectedOption]);
-    // Seçilen seçeneği geri döndür
-    return;
+  if(buttonState2 == LOW && selectedOption == 0) {
+    // Başla seçeneği seçildiyse butonların kontrolünü durdur
+    // Ekranı temizle
+    display.clearDisplay();
+    display.display();
+    // Sonsuz döngüde kalır ve işlemi durdurur
+    while(true) {
+      // Sonsuz döngü
+    }
   }
 }
