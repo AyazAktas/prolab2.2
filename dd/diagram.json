@@ -31,7 +31,8 @@
       "top": -139,
       "left": 421.4,
       "attrs": { "travelLength": "30" }
-    }
+    },
+    { "type": "wokwi-7segment", "id": "sevseg1", "top": -379.02, "left": 485.08, "attrs": {} }
   ],
   "connections": [
     [ "oled1:VCC", "uno:5V", "red", [ "v0" ] ],
@@ -41,10 +42,19 @@
     [ "btn1:1.r", "uno:2", "green", [ "v0" ] ],
     [ "btn1:2.l", "uno:GND.1", "green", [ "h0" ] ],
     [ "btn2:2.l", "uno:GND.1", "green", [ "h0" ] ],
-    [ "btn2:1.r", "uno:8", "white", [ "v0" ] ],
     [ "pot1:GND", "uno:GND.2", "black", [ "v0" ] ],
     [ "pot1:SIG", "uno:A0", "green", [ "h0" ] ],
-    [ "pot1:VCC", "uno:5V", "red", [ "h0" ] ]
+    [ "pot1:VCC", "uno:5V", "red", [ "h0" ] ],
+    [ "sevseg1:A", "uno:10", "green", [ "v-47.16", "h-9.6" ] ],
+    [ "sevseg1:B", "uno:9", "green", [ "v-37.56", "h-259.2", "v9.6", "h-115.2" ] ],
+    [ "sevseg1:C", "uno:8", "green", [ "v67.2", "h-134.4", "v76.8", "h-220.8" ] ],
+    [ "sevseg1:D", "uno:7", "green", [ "v105.6", "h-28.8", "v48", "h-288" ] ],
+    [ "sevseg1:E", "uno:6", "green", [ "v38.4", "h-240", "v96", "h-67.2" ] ],
+    [ "sevseg1:F", "uno:5", "green", [ "v-27.96", "h-230.4", "v124.8", "h-48" ] ],
+    [ "sevseg1:G", "uno:4", "green", [ "v-18.36", "h-211.2", "v201.6", "h-48" ] ],
+    [ "sevseg1:COM.2", "uno:5V", "green", [ "h115.2", "v471.24", "h-480" ] ],
+    [ "sevseg1:COM.1", "uno:5V", "green", [ "h172.8", "v374.4", "h-518.4" ] ],
+    [ "btn2:1.r", "uno:11", "white", [ "v67.2", "h19.4" ] ]
   ],
   "dependencies": {}
 }
