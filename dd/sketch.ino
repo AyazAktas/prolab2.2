@@ -34,16 +34,96 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
 }
 
+const int ballSize = 4;          // Topun çapı
+const int paddleWidth = 20;      // Palet genişliği
+const int paddleHeight = 4;      // Palet yüksekliği
+const int paddleSpeed = 3;       // Paletin hareket hızı
+const int brickRows = 4;         // Tuğla sıraları
+const int brickColumns = 6;      // Tuğla sütunları
+const int brickWidth = 20;       // Tuğla genişliği
+const int brickHeight = 8;       // Tuğla yüksekliği
+const int brickPadding = 2;      // Tuğla arası boşluk
+const int brickOffsetX = 18;     // Tuğla başlangıç x konumu
+const int brickOffsetY = 10;     // Tuğla başlangıç y konumu
+
 void basla() {
-  // Ekranı temizle
-  display.clearDisplay();
-  display.display();
-  // Yeni ekrana geçiş mesajını yaz
-  display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(10, 20);
-  display.println("Selam!");
-  display.display();
+  // Topun ve paletin konumunu ve hızını sıfırla
+  int ballX = SCREEN_WIDTH / 2;
+  int ballY = SCREEN_HEIGHT / 2;
+  int ballDX = 1;
+  int ballDY = -1;
+  int paddleX = (SCREEN_WIDTH - paddleWidth) / 2;
+  
+  // Tuğla matrisini başlat
+  int bricks[brickRows][brickColumns];
+  for (int row = 0; row < brickRows; row++) {
+    for (int col = 0; col < brickColumns; col++) {
+      bricks[row][col] = 1;
+    }
+  }
+  
+  // Ana oyun döngüsü
+  while (true) {
+    // Potansiyometreden paletin konumunu oku
+    int potValue = analogRead(A0);
+    paddleX = map(potValue, 0, 1023, 0, SCREEN_WIDTH - paddleWidth);
+    
+    // Ekranı temizle
+    display.clearDisplay();
+    
+    // Topu ve paleti çiz
+    display.fillCircle(ballX, ballY, ballSize, SSD1306_WHITE);
+    display.fillRect(paddleX, SCREEN_HEIGHT - 8, paddleWidth, paddleHeight, SSD1306_WHITE);
+    
+    // Tuğlaları çiz
+    for (int row = 0; row < brickRows; row++) {
+      for (int col = 0; col < brickColumns; col++) {
+        if (bricks[row][col] == 1) {
+          int brickX = col * (brickWidth + brickPadding) + brickOffsetX;
+          int brickY = row * (brickHeight + brickPadding) + brickOffsetY;
+          display.fillRect(brickX, brickY, brickWidth, brickHeight, SSD1306_WHITE);
+        }
+      }
+    }
+    
+    // Topun hareketini güncelle
+    ballX += ballDX;
+    ballY += ballDY;
+    
+    // Topun ekran kenarlarına çarpmasını kontrol et
+    if (ballX <= 0 || ballX >= SCREEN_WIDTH) {
+      ballDX *= -1;
+    }
+    if (ballY <= 0 || ballY >= SCREEN_HEIGHT) {
+      ballDY *= -1;
+    }
+    
+    // Topun paletle çarpışmasını kontrol et
+    if (ballY >= SCREEN_HEIGHT - 8 - ballSize && ballX >= paddleX && ballX <= paddleX + paddleWidth) {
+      ballDY *= -1;
+    }
+    
+    // Topun tuğlalarla çarpışmasını kontrol et
+    for (int row = 0; row < brickRows; row++) {
+      for (int col = 0; col < brickColumns; col++) {
+        if (bricks[row][col] == 1) {
+          int brickX = col * (brickWidth + brickPadding) + brickOffsetX;
+          int brickY = row * (brickHeight + brickPadding) + brickOffsetY;
+          if (ballY - ballSize <= brickY + brickHeight && ballY + ballSize >= brickY &&
+              ballX + ballSize >= brickX && ballX - ballSize <= brickX + brickWidth) {
+            ballDY *= -1;
+            bricks[row][col] = 0; // Tuğlayı kır
+          }
+        }
+      }
+    }
+    
+    // Oyunu yeniden çiz
+    display.display();
+    
+    // Biraz gecikme ekle
+    delay(10);
+  }
 }
 void loop() {
   // Menüyü göster
