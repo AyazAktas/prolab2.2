@@ -24,6 +24,13 @@
       "top": -253,
       "left": 9.6,
       "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot1",
+      "top": -139,
+      "left": 421.4,
+      "attrs": { "travelLength": "30" }
     }
   ],
   "connections": [
@@ -34,7 +41,10 @@
     [ "btn1:1.r", "uno:2", "green", [ "v0" ] ],
     [ "btn1:2.l", "uno:GND.1", "green", [ "h0" ] ],
     [ "btn2:2.l", "uno:GND.1", "green", [ "h0" ] ],
-    [ "btn2:1.r", "uno:8", "white", [ "v0" ] ]
+    [ "btn2:1.r", "uno:8", "white", [ "v0" ] ],
+    [ "pot1:GND", "uno:GND.2", "black", [ "v0" ] ],
+    [ "pot1:SIG", "uno:A0", "green", [ "h0" ] ],
+    [ "pot1:VCC", "uno:5V", "red", [ "h0" ] ]
   ],
   "dependencies": {}
 }
