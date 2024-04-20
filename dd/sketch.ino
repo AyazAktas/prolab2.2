@@ -33,6 +33,7 @@ void setup() {
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
 }
+
 void basla() {
   // Ekranı temizle
   display.clearDisplay();
@@ -44,7 +45,6 @@ void basla() {
   display.println("Selam!");
   display.display();
 }
-
 void loop() {
   // Menüyü göster
   display.clearDisplay();
@@ -75,14 +75,23 @@ void loop() {
   // Kırmızı butonun durumunu oku
   int buttonState2 = digitalRead(buttonPin2);
   // Kırmızı butona basıldığında seçilen seçeneği seç
-  if(buttonState2 == LOW && selectedOption == 0) {
-    // Başla seçeneği seçildiyse butonların kontrolünü durdur
-    // Ekranı temizle
-    display.clearDisplay();
-    display.display();
-    // Sonsuz döngüde kalır ve işlemi durdurur
-    while(true) {
-      // Sonsuz döngü
-    }
+  if(buttonState2 == LOW) {
+    // Seçilen seçeneği seri monitöre yaz
+    Serial.println("Seçilen seçenek: " + options[selectedOption]);
+    // Çıkış seçeneği seçildiyse programı sonlandır
+    if (selectedOption == 1) {
+      // Ekranı temizle
+      display.clearDisplay();
+      display.display();
+      // Sonsuz döngüde kalır ve işlemi durdurur
+  while(true) {
+    // Sonsuz döngü
+  }
+  }
+  if(selectedOption == 0){
+    
+    basla();
+  }
+
   }
 }
