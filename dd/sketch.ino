@@ -16,6 +16,18 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define F 5
 #define G 4
 
+const int ballSize = 4;          // Topun çapı
+const int paddleWidth = 20;      // Palet genişliği
+const int paddleHeight = 4;      // Palet yüksekliği
+const int paddleSpeed = 3;       // Paletin hareket hızı
+const int brickRows = 4;         // Tuğla sıraları
+const int brickColumns = 6;      // Tuğla sütunları
+const int brickWidth = 20;       // Tuğla genişliği
+const int brickHeight = 8;       // Tuğla yüksekliği
+const int brickPadding = 2;      // Tuğla arası boşluk
+const int brickOffsetX = 0;     // Tuğla başlangıç x konumu
+const int brickOffsetY = 2;      // Tuğla başlangıç y konumu
+
 const int buttonPin1 = 2; // Mavi buton
 const int buttonPin2 = 11; // Kırmızı buton
 
@@ -26,14 +38,18 @@ String options[] = {"BASLA", "CIKIS"};
 
 void setup() {
   Serial.begin(9600);
-  
+
   pinMode(buttonPin1, INPUT_PULLUP); // Dahili direnç ile mavi butonun pull-up
   pinMode(buttonPin2, INPUT_PULLUP); // Dahili direnç ile kırmızı butonun pull-up
 
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("SSD1306 allocation failed");
-    for(;;);
+    for (;;);
   }
+
+  // Tuğlaların ekranın ortasına hizalanması için offset değerleri hesapla
+  int brickOffsetX = (SCREEN_WIDTH - (brickColumns * (brickWidth + brickPadding))) / 2;
+  int brickOffsetY = (SCREEN_HEIGHT - (brickRows * (brickHeight + brickPadding))) / 2;
 
   display.display();
   delay(2000);
@@ -42,18 +58,8 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
 }
 
-const int ballSize = 4;          // Topun çapı
-const int paddleWidth = 20;      // Palet genişliği
-const int paddleHeight = 4;      // Palet yüksekliği
-const int paddleSpeed = 3;       // Paletin hareket hızı
-const int brickRows = 4;         // Tuğla sıraları
-const int brickColumns = 6;      // Tuğla sütunları
-const int brickWidth = 20;       // Tuğla genişliği
-const int brickHeight = 8;       // Tuğla yüksekliği
-const int brickPadding = 2;      // Tuğla arası boşluk
-const int brickOffsetX = 18;     // Tuğla başlangıç x konumu
-const int brickOffsetY = 2;      // Tuğla başlangıç y konumu
 int score = 0; // Skor değişkeni
+int lives = 3; // Can sayısı
 
 const byte digits[][7] = {
   {1, 1, 1, 1, 1, 1, 0}, // 0
@@ -78,12 +84,12 @@ void basla() {
   pinMode(F, OUTPUT);
   pinMode(G, OUTPUT);
   // Topun ve paletin konumunu ve hızını sıfırla
-  int ballX = SCREEN_WIDTH / 2;
-  int ballY = SCREEN_HEIGHT / 2;
+  int ballX = (SCREEN_WIDTH - paddleWidth) / 2;
+  int ballY = paddleHeight + ballSize;
   int ballDX = 1;
-  int ballDY = -1;
+  int ballDY = 1;
   int paddleX = (SCREEN_WIDTH - paddleWidth) / 2;
-  
+
   // Tuğla matrisini başlat
   int bricks[brickRows][brickColumns];
   for (int row = 0; row < brickRows; row++) {
@@ -92,21 +98,21 @@ void basla() {
     }
   }
 
-  int tempScore;
-  
+  int brickCount = brickRows * brickColumns; // Başlangıçta tüm tuğlalar kırılmamış olarak kabul edilir
+
   // Ana oyun döngüsü
-  while (true) {
+  while (lives > 0) { // Canlar sıfırdan büyük olduğu sürece devam et
     // Potansiyometreden paletin konumunu oku
     int potValue = analogRead(A0);
     paddleX = map(potValue, 0, 1023, 0, SCREEN_WIDTH - paddleWidth);
-    
+
     // Ekranı temizle
     display.clearDisplay();
-    
+
     // Topu ve paleti çiz
     display.fillCircle(ballX, ballY, ballSize, SSD1306_WHITE);
     display.fillRect(paddleX, SCREEN_HEIGHT - 8, paddleWidth, paddleHeight, SSD1306_WHITE);
-    
+
     // Tuğlaları çiz
     for (int row = 0; row < brickRows; row++) {
       for (int col = 0; col < brickColumns; col++) {
@@ -117,11 +123,26 @@ void basla() {
         }
       }
     }
-    
+
+    // Eğer hiç kırılmamış tuğla kalmadıysa
+    if (brickCount == 0) {
+      // Ekranı temizle
+      display.clearDisplay();
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(10, 20);
+      display.println("Tebrikler!");
+      display.println("Tum tuğlalari");
+      display.println("kirdiniz!");
+      display.display();
+      delay(5000); // 5 saniye bekleme
+      break; // Döngüden çık
+    }
+
     // Topun hareketini güncelle
     ballX += ballDX;
     ballY += ballDY;
-    
+
     // Topun sınırları kontrol et
     if (ballX <= 0 || ballX >= SCREEN_WIDTH) {
       ballDX *= -1;
@@ -130,15 +151,27 @@ void basla() {
       ballDY *= -1;
     }
     if (ballY >= SCREEN_HEIGHT) {
-      // Top ekranın altına ulaştı, oyunu bitir
-      return;
+      // Top ekranın altına ulaştı, canı azalt
+      lives--;
+      Serial.print("Kalan Can: ");
+      Serial.println(lives);
+      delay(1000); // Bir saniye bekleme
+      // Yeni bir can varsa, topu ve paleti başlangıç pozisyonuna yerleştir
+      if (lives > 0) {
+        ballX = (SCREEN_WIDTH - paddleWidth) / 2;
+        ballY = paddleHeight + ballSize;
+        continue; // Oyunu durdurmadan devam et
+      } else {
+        // Can kalmadığında oyunu bitir
+        break;
+      }
     }
-    
+
     // Topun paletle çarpışmasını kontrol et
     if (ballY >= SCREEN_HEIGHT - 8 - ballSize && ballX >= paddleX && ballX <= paddleX + paddleWidth) {
       ballDY *= -1;
     }
-    displayDigit(score);
+
     // Topun tuğlalarla çarpışmasını kontrol et
     for (int row = 0; row < brickRows; row++) {
       for (int col = 0; col < brickColumns; col++) {
@@ -150,26 +183,34 @@ void basla() {
             ballDY *= -1;
             bricks[row][col] = 0; // Tuğlayı kır
             score++; // Skoru artır
-            tempScore = score;
-            score = score % 10;
-            displayDigit(score);
-            Serial.println(tempScore);
+            displayDigit(score % 10); // Skoru güncelle
+            brickCount--; // Kırılmamış tuğla sayısını azalt
+            Serial.println(score);
           }
         }
       }
     }
-        
+
     // Oyunu yeniden çiz
     display.display();
-    
+
     // Biraz gecikme ekle
     delay(10);
   }
+
+  // Oyun bittiğinde
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(10, 20);
+  display.println("Oyun Bitti!");
+  display.display();
+  delay(3000); // 3 saniye bekleme
 }
 
 // 7 segment display'i güncellemek için fonksiyon
 void displayDigit(int digit) {
-  int a=0;
+  int a = 0;
   for (int i = 10; i > 3; i--) {
     digitalWrite(i, !digits[digit][a]); // Değeri tersine çevir
     a++;
@@ -180,24 +221,24 @@ void loop() {
   // Menüyü göster
   display.clearDisplay();
   display.setCursor(0, 0);
-  
+
   // Seçilen seçeneğin yanında bir nokta göster
   if (selectedOption == 0) {
     display.print("* ");
   }
   display.println(options[0]);
-  
+
   if (selectedOption == 1) {
     display.print("* ");
   }
   display.println(options[1]);
-  
+
   display.display();
 
   // Mavi butonun durumunu oku
   int buttonState1 = digitalRead(buttonPin1);
   // Mavi butona basıldığında seçilen seçeneği değiştir
-  if(buttonState1 == LOW) {
+  if (buttonState1 == LOW) {
     selectedOption = 1 - selectedOption; // Toggle işlemi (0 ise 1, 1 ise 0 yapar)
     delay(200); // debounce
     // Seçilen seçenekle ilgili işlevi çağır
@@ -206,7 +247,7 @@ void loop() {
   // Kırmızı butonun durumunu oku
   int buttonState2 = digitalRead(buttonPin2);
   // Kırmızı butona basıldığında seçilen seçeneği seç
-  if(buttonState2 == LOW) {
+  if (buttonState2 == LOW) {
     // Seçilen seçeneği seri monitöre yaz
     Serial.println("Seçilen seçenek: " + options[selectedOption]);
     // Çıkış seçeneği seçildiyse programı sonlandır
@@ -216,12 +257,13 @@ void loop() {
       display.print("tesekkürler");
       display.display();
       // Sonsuz döngüde kalır ve işlemi durdurur
-      while(true) {
+      while (true) {
         // Sonsuz döngü
       }
     }
-    if(selectedOption == 0){
+    if (selectedOption == 0) {
       score = 0; // Oyun başladığında skoru sıfırla
+      lives = 3; // Canları yeniden ayarla
       basla();
     }
   }
