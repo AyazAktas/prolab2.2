@@ -98,14 +98,14 @@
     [ "sevseg1:COM.1", "uno:5V", "green", [ "h172.8", "v374.4", "h-518.4" ] ],
     [ "btn2:1.r", "uno:11", "white", [ "v67.2", "h19.4" ] ],
     [ "led1:A", "r1:1", "green", [ "v0" ] ],
-    [ "led1:C", "uno:GND.1", "green", [ "v57.6", "h48.4" ] ],
     [ "led2:A", "r2:1", "green", [ "v0" ] ],
     [ "led2:C", "uno:GND.1", "green", [ "v134.4", "h19.6" ] ],
     [ "led3:C", "uno:GND.1", "green", [ "v172.8", "h278.8" ] ],
     [ "led3:A", "r3:1", "green", [ "v0" ] ],
     [ "r3:2", "uno:12", "green", [ "v124.8", "h219.6" ] ],
     [ "r2:2", "uno:13", "green", [ "v48", "h-10.8" ] ],
-    [ "r1:2", "uno:2", "green", [ "v0" ] ]
+    [ "led1:C", "uno:GND.1", "green", [ "v48", "h48.4" ] ],
+    [ "r1:2", "uno:6", "green", [ "v96", "h-10.8" ] ]
   ],
   "dependencies": {}
 }
