@@ -31,6 +31,11 @@ const int brickOffsetY = 2;      // Tuğla başlangıç y konumu
 const int buttonPin1 = 2; // Mavi buton
 const int buttonPin2 = 11; // Kırmızı buton
 
+const int redLedPin = 2; // Kırmızı led
+const int yellowLedPin = 13; // Sarı led
+const int greenLedPin = 12; // Yeşil led
+
+
 int selectedOption = 0;
 const int numOptions = 2; // Başla ve Çıkış
 
@@ -41,6 +46,10 @@ void setup() {
 
   pinMode(buttonPin1, INPUT_PULLUP); // Dahili direnç ile mavi butonun pull-up
   pinMode(buttonPin2, INPUT_PULLUP); // Dahili direnç ile kırmızı butonun pull-up
+
+  pinMode(redLedPin, OUTPUT);
+  pinMode(yellowLedPin, OUTPUT);
+  pinMode(greenLedPin, OUTPUT);
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println("SSD1306 allocation failed");
@@ -83,6 +92,10 @@ void basla() {
   pinMode(E, OUTPUT);
   pinMode(F, OUTPUT);
   pinMode(G, OUTPUT);
+
+  digitalWrite(redLedPin, HIGH);
+  digitalWrite(yellowLedPin, HIGH);
+  digitalWrite(greenLedPin, HIGH);
   // Topun ve paletin konumunu ve hızını sıfırla
   int ballX = (SCREEN_WIDTH - paddleWidth) / 2;
   int ballY = paddleHeight + ballSize;
@@ -155,6 +168,15 @@ void basla() {
       lives--;
       Serial.print("Kalan Can: ");
       Serial.println(lives);
+      if(lives == 2){
+        digitalWrite(greenLedPin, LOW);
+      }
+      if(lives == 1){
+        digitalWrite(yellowLedPin, LOW);
+      }
+      if(lives == 0){
+        digitalWrite(redLedPin, LOW);
+      }
       delay(1000); // Bir saniye bekleme
       // Yeni bir can varsa, topu ve paleti başlangıç pozisyonuna yerleştir
       if (lives > 0) {
