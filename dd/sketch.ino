@@ -36,20 +36,6 @@ const int yellowLedPin = 13; // Sarı led
 const int greenLedPin = 12; // Yeşil led
 
 
-// Kalp sembolünün bitmap görüntüsü
-const unsigned char heartBitmap[] PROGMEM = {
-  B00011000,
-  B01111110,
-  B11111111,
-  B11111111,
-  B11111111,
-  B01111110,
-  B00111100,
-  B00011000
-};
-
-
-
 int selectedOption = 0;
 const int numOptions = 2; // Başla ve Çıkış
 
@@ -97,6 +83,17 @@ const byte digits[][7] = {
   {1, 1, 1, 1, 0, 1, 1}  // 9
 };
 
+// Kalp Bitmap
+const unsigned char PROGMEM heartBitmap[] =
+{ B00000000,
+  B01000100,
+  B11111110,
+  B11111110,
+  B01111100,
+  B00111000,
+  B00010000,
+  B00000000};
+
 void basla() {
 
   pinMode(A, OUTPUT);
@@ -110,10 +107,10 @@ void basla() {
   digitalWrite(redLedPin, HIGH);
   digitalWrite(yellowLedPin, HIGH);
   digitalWrite(greenLedPin, HIGH);
-   int ballX = (SCREEN_WIDTH - paddleWidth) / 2;
-  int ballY = paddleHeight + ballSize;
-  int ballDX = 1;
-  int ballDY = 1;
+   float ballX = (SCREEN_WIDTH - paddleWidth) / 2;
+  float ballY = paddleHeight + ballSize;
+  float ballDX = 1;
+  float ballDY = 1;
   int paddleX = (SCREEN_WIDTH - paddleWidth) / 2;
 
   // Kalp değişkenlerini tanımla
@@ -176,8 +173,12 @@ void basla() {
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(10, 20);
     display.println("Tebrikler!");
-    display.println("Yeni bölüme geçin!");
+    display.println("Yeni Bolume Gecin!");
     display.display();
+    ballDX *= 1.2;
+    ballDY *= 1.2;
+    Serial.println(ballDX);
+
     delay(5000); // 5 saniye bekleme
     }
 
@@ -222,7 +223,7 @@ void basla() {
     if (ballY >= SCREEN_HEIGHT - 8 - ballSize && ballX >= paddleX && ballX <= paddleX + paddleWidth) {
       ballDY *= -1;
     }
-
+    
     // Topun tuğlalarla çarpışmasını kontrol et
     for (int row = 0; row < brickRows; row++) {
       for (int col = 0; col < brickColumns; col++) {
@@ -237,17 +238,17 @@ void basla() {
             displayDigit(score % 10); // Skoru güncelle
             brickCount--; // Kırılmamış tuğla sayısını azalt
             Serial.println(score);
+            // Kalp çıkma kontrolü
+            if (!heartActive && random(0, 100) < 10) { // %10 olasılıkla kalp çıkacak
+            heartActive = true; // Kalp aktif hale getir
+            heartX = ballX; // Kalp konumunu topa ayarla
+            heartY = ballY;
+          }
           }
         }
       }
     }
 
-    // Kalp çıkma kontrolü
-    if (!heartActive && random(0, 100) < 10) { // %10 olasılıkla kalp çıkacak
-      heartActive = true; // Kalp aktif hale getir
-      heartX = random(0, SCREEN_WIDTH); // Kalp X konumu rastgele ayarla
-      heartY = 0; // Kalp Y konumu ekranın en üstünde başlayacak
-    }
 
     // Kalbi çiz
     if (heartActive) {
@@ -261,10 +262,11 @@ void basla() {
       // Paletle çarpışma kontrolü
       if (heartY + 8 >= SCREEN_HEIGHT - 8 - ballSize && heartX >= paddleX && heartX <= paddleX + paddleWidth) {
         heartActive = false; // Kalp paletle temas etti, artık aktif değil
+        if(lives < 3){
         lives++; // Canı artır
+        }
+    }
   }
-}
-
     // Oyunu yeniden çiz
     display.display();
 
