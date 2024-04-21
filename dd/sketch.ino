@@ -104,7 +104,7 @@ void basla() {
 
   // Tuğla matrisini başlat
   int bricks[brickRows][brickColumns];
-  
+
   int brickCount = 0;
   // Rastgele konumlarda tuğlaları oluştur
   for (int row = 0; row < brickRows; row++) {
@@ -142,17 +142,24 @@ void basla() {
 
     // Eğer hiç kırılmamış tuğla kalmadıysa
     if (brickCount == 0) {
-      // Ekranı temizle
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setTextColor(SSD1306_WHITE);
-      display.setCursor(10, 20);
-      display.println("Tebrikler!");
-      display.println("Tum tuğlalari");
-      display.println("kirdiniz!");
-      display.display();
-      delay(5000); // 5 saniye bekleme
-      break; // Döngüden çık
+      for (int row = 0; row < brickRows; row++) {
+        for (int col = 0; col < brickColumns; col++) {
+            bricks[row][col] = random(0, 2); // Her tuğla için rastgele bir durum oluştur (0: yok, 1: var)
+            if(bricks[row][col] == 1){
+                brickCount++;
+            }
+        }
+    }
+    
+    // Ekranı temizle
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(10, 20);
+    display.println("Tebrikler!");
+    display.println("Yeni bölüme geçin!");
+    display.display();
+    delay(5000); // 5 saniye bekleme
     }
 
     // Topun hareketini güncelle
@@ -228,7 +235,8 @@ void basla() {
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(10, 20);
-  display.println("Oyun Bitti!");
+  display.print("SKOR: ");
+  display.println(score);
   display.display();
   delay(3000); // 3 saniye bekleme
 }
