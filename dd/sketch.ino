@@ -96,8 +96,7 @@ void basla() {
   digitalWrite(redLedPin, HIGH);
   digitalWrite(yellowLedPin, HIGH);
   digitalWrite(greenLedPin, HIGH);
-  // Topun ve paletin konumunu ve hızını sıfırla
-  int ballX = (SCREEN_WIDTH - paddleWidth) / 2;
+   int ballX = (SCREEN_WIDTH - paddleWidth) / 2;
   int ballY = paddleHeight + ballSize;
   int ballDX = 1;
   int ballDY = 1;
@@ -105,13 +104,18 @@ void basla() {
 
   // Tuğla matrisini başlat
   int bricks[brickRows][brickColumns];
+  
+  int brickCount = 0;
+  // Rastgele konumlarda tuğlaları oluştur
   for (int row = 0; row < brickRows; row++) {
     for (int col = 0; col < brickColumns; col++) {
-      bricks[row][col] = 1;
+      bricks[row][col] = random(0, 2); // Her tuğla için rastgele bir durum oluştur (0: yok, 1: var)
+      if(bricks[row][col] == 1){
+        brickCount++;
+      }
     }
   }
 
-  int brickCount = brickRows * brickColumns; // Başlangıçta tüm tuğlalar kırılmamış olarak kabul edilir
 
   // Ana oyun döngüsü
   while (lives > 0) { // Canlar sıfırdan büyük olduğu sürece devam et
@@ -125,15 +129,14 @@ void basla() {
     // Topu ve paleti çiz
     display.fillCircle(ballX, ballY, ballSize, SSD1306_WHITE);
     display.fillRect(paddleX, SCREEN_HEIGHT - 8, paddleWidth, paddleHeight, SSD1306_WHITE);
-
     // Tuğlaları çiz
     for (int row = 0; row < brickRows; row++) {
       for (int col = 0; col < brickColumns; col++) {
         if (bricks[row][col] == 1) {
-          int brickX = col * (brickWidth + brickPadding) + brickOffsetX;
-          int brickY = row * (brickHeight + brickPadding) + brickOffsetY;
-          display.fillRect(brickX, brickY, brickWidth, brickHeight, SSD1306_WHITE);
-        }
+        int brickX = col * (brickWidth + brickPadding) + brickOffsetX;
+        int brickY = row * (brickHeight + brickPadding) + brickOffsetY;
+        display.fillRect(brickX, brickY, brickWidth, brickHeight, SSD1306_WHITE);
+        }        
       }
     }
 
