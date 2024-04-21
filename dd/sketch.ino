@@ -36,6 +36,20 @@ const int yellowLedPin = 13; // Sarı led
 const int greenLedPin = 12; // Yeşil led
 
 
+// Kalp sembolünün bitmap görüntüsü
+const unsigned char heartBitmap[] PROGMEM = {
+  B00011000,
+  B01111110,
+  B11111111,
+  B11111111,
+  B11111111,
+  B01111110,
+  B00111100,
+  B00011000
+};
+
+
+
 int selectedOption = 0;
 const int numOptions = 2; // Başla ve Çıkış
 
@@ -101,6 +115,11 @@ void basla() {
   int ballDX = 1;
   int ballDY = 1;
   int paddleX = (SCREEN_WIDTH - paddleWidth) / 2;
+
+  // Kalp değişkenlerini tanımla
+  int heartX = 0;
+  int heartY = 0;
+  bool heartActive = false;
 
   // Tuğla matrisini başlat
   int bricks[brickRows][brickColumns];
@@ -222,6 +241,29 @@ void basla() {
         }
       }
     }
+
+    // Kalp çıkma kontrolü
+    if (!heartActive && random(0, 100) < 10) { // %10 olasılıkla kalp çıkacak
+      heartActive = true; // Kalp aktif hale getir
+      heartX = random(0, SCREEN_WIDTH); // Kalp X konumu rastgele ayarla
+      heartY = 0; // Kalp Y konumu ekranın en üstünde başlayacak
+    }
+
+    // Kalbi çiz
+    if (heartActive) {
+      // Kalbi çiz
+      display.drawBitmap(heartX, heartY, heartBitmap, 8, 8, SSD1306_WHITE); // Varsayılan kalp çizimi 8x8 boyutunda olacak
+      heartY += 1; // Kalbi aşağıya hareket ettir
+      // Kalp ekranın altına ulaştığında kontrol et
+      if (heartY >= SCREEN_HEIGHT) {
+        heartActive = false; // Kalp ekranın dışına çıktı, artık aktif değil
+      }
+      // Paletle çarpışma kontrolü
+      if (heartY + 8 >= SCREEN_HEIGHT - 8 - ballSize && heartX >= paddleX && heartX <= paddleX + paddleWidth) {
+        heartActive = false; // Kalp paletle temas etti, artık aktif değil
+        lives++; // Canı artır
+  }
+}
 
     // Oyunu yeniden çiz
     display.display();
