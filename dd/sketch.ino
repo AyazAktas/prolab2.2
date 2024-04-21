@@ -142,6 +142,7 @@ void basla() {
     // Ekranı temizle
     display.clearDisplay();
 
+
     // Topu ve paleti çiz
     display.fillCircle(ballX, ballY, ballSize, SSD1306_WHITE);
     display.fillRect(paddleX, SCREEN_HEIGHT - 8, paddleWidth, paddleHeight, SSD1306_WHITE);
@@ -263,7 +264,13 @@ void basla() {
       if (heartY + 8 >= SCREEN_HEIGHT - 8 - ballSize && heartX >= paddleX && heartX <= paddleX + paddleWidth) {
         heartActive = false; // Kalp paletle temas etti, artık aktif değil
         if(lives < 3){
-        lives++; // Canı artır
+        lives++;
+        if(lives == 3){
+          digitalWrite(greenLedPin, HIGH);
+        }
+        if(lives == 2){
+          digitalWrite(yellowLedPin, HIGH);
+        }
         }
     }
   }
