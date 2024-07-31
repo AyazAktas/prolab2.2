@@ -1,2 +1,2 @@
 # prolab2.2
-sa
+Mikrodenetleyici Tabanlı Oyun Makinesi projesi, sistem programlama ve elektronik bilgilerinin pratiğe dökülmesini sağlayan mikrodenetleyici tabanlı oyun geliştirme projesidir. Oyuncu fiziksel palet kontrol cihazını kullanarak OLED ekrandaki topları kırmaya çalışacaktır. Proje; mikrodenetleyici kullanarak devre olus¸turma, OLED ekrana palet,tuğla ve topun yansıtılması, palet ve topun hareketi gibi temel oyun mekaniklerini içerir. Arayüz tasarımı da projenin önemli bir parçasıdır, net ve kullanıcı dostu bir arayüz tasarlanmıştır. Bu proje, ögrencilerin sistem programlama ve elektronik konularındaki teorik bilgilerini pekiştirmeyi ve pratik becerilerini geliştirmeyi amaçlamaktadır.
